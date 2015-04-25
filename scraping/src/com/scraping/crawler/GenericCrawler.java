@@ -3,14 +3,12 @@ package com.scraping.crawler;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import com.scraping.db.ConfigUtil;
 import com.scraping.link.LinkUtil;
 
 public class GenericCrawler extends Crawler implements Cloneable{
 	
-	private String allowedUrls;
+	
 	private String configName;
 	
 	public GenericCrawler(String url, int level, String configName) {
@@ -18,7 +16,7 @@ public class GenericCrawler extends Crawler implements Cloneable{
 		setConfigName(configName);
 		props = ConfigUtil.getProperties(ConfigUtil.getProperties(ConfigUtil.getConfigFile()).get(configName));
 		this.setMaxLevel(Integer.parseInt(props.get("maxlevel")));
-		this.allowedUrls = props.get("allowedurls");
+		
 		
 		
 	}
@@ -26,7 +24,7 @@ public class GenericCrawler extends Crawler implements Cloneable{
 	public GenericCrawler(String url, int level, int maxLevel, String allowedUrls){
 		super(url,level);
 		this.setMaxLevel(maxLevel);
-		this.allowedUrls = allowedUrls;
+		
 	}
 
 	private Map<String,String> props;
@@ -38,7 +36,9 @@ public class GenericCrawler extends Crawler implements Cloneable{
 			return true;
 		String url = getUrl();
 		boolean flag = false;
-		List<String> allowedUrlList = Arrays.asList(this.allowedUrls.split(","));
+		List<String> allowedUrlList = getAllowedUrls();
+		if (allowedUrlList == null)
+			return true;
 		for(String allowedUrl : allowedUrlList){
 			if(url.contains(allowedUrl)){
 				flag = true;
@@ -86,6 +86,8 @@ public class GenericCrawler extends Crawler implements Cloneable{
 	
 	public List<String> getAllowedUrls(){
 		String allowedUrls = props.get("allowedurls");
+		if (allowedUrls==null || allowedUrls.equalsIgnoreCase("*"))
+			return null;
 		List<String> allowedUrlList=Arrays.asList(allowedUrls.split(","));
 		return allowedUrlList;
 	}
