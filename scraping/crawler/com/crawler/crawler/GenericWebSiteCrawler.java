@@ -1,5 +1,6 @@
 package com.crawler.crawler;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -37,10 +38,20 @@ public class GenericWebSiteCrawler extends Thread implements Crawler{
 		
 	}
 	
+	public GenericWebSiteCrawler(String url, int myLevel, int depth, boolean internalOnly){
+		this(url,myLevel,depth);
+		if(internalOnly){
+			this.allowedUrls = new HashSet<String>();
+			this.allowedUrls.add(LinkUtil.getDomainName(url));
+		}
+		
+	}
+	
 	public GenericWebSiteCrawler(){}
 
 	@Override
 	public void run() {
+		
 		if(isCrawlable())
 			crawl();
 		
@@ -49,12 +60,17 @@ public class GenericWebSiteCrawler extends Thread implements Crawler{
 	}
 	
     public void crawl() {
-		
-		for(String link : LinkUtil.getAllLinks(getUrl())){
+    	//System.out.println("url: "+getUrl() );
+    	Set<String> listOfLinks = LinkUtil.getAllLinks(getUrl());		
+    	if(listOfLinks == null)
+    		return;
+		for(String link : listOfLinks){
 			
 			int level = getMyLevel();
 			GenericWebSiteCrawler crw;
 			try {
+				if(LinkUtil.isChildUrl(link))
+					link=LinkUtil.attachParentUrl(LinkUtil.getDomainName(getUrl()), link);
 				crw = (GenericWebSiteCrawler)this.clone();
 				crw.setUrl(link);
 				crw.setMyLevel(++level);
@@ -94,15 +110,18 @@ public class GenericWebSiteCrawler extends Thread implements Crawler{
 
 	@Override
 	public boolean isCrawlable() {
+		
 		boolean flag=false;
 		if(getDepthLevel()==0)
 			return true;
 		else if(getDepthLevel()<=getMyLevel())
 			return false;
+		System.out.println("hum yaha");
 		if(allowedUrls==null || CrawlerUtil.isAnyElementContains(getUrl(), allowedUrls))
 			flag=true;
-		if(notAllowedUrls==null || !CrawlerUtil.isAnyElementContains(getUrl(), notAllowedUrls))
-			flag=true;
+		/*if(notAllowedUrls==null || !CrawlerUtil.isAnyElementContains(getUrl(), notAllowedUrls))
+			flag=true;*/
+		System.out.println("url: "+getUrl()+"\n returning "+flag);
 		return flag;
 	}
 

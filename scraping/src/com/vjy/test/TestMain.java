@@ -3,6 +3,7 @@ package com.vjy.test;
 import java.util.Map;
 import java.util.Set;
 
+import com.crawler.crawler.GenericWebSiteCrawler;
 import com.scraping.acquirer.GenericAcquirer;
 import com.scraping.crawler.Crawler;
 import com.scraping.downloadming.DownloadmingCrawlerA2Z;
@@ -31,6 +32,23 @@ import com.scraping.spider.xsongspk.XsongsPKSearchSpider;
 public class TestMain {
  
   public static void main(String[] args) {
+	  
+	  System.out.println(LinkUtil.getDomainName("https://www.drupal.org/drupalcon"));
+	  /*String Parrenturl = "https://www.drupal.org/node/1588782";
+	  String url = "https://www.drupal.org/drupalcon";
+	  if(LinkUtil.isChildUrl(url))
+		  url= LinkUtil.attachParentUrl(LinkUtil.getDomainName(Parrenturl), url);
+	  System.out.println(url);
+	  
+	 // GenericWebSiteCrawler crw = new GenericWebSiteCrawler("https://www.drupal.org/",0,2,true);
+	  //crw.run();
+	  
+	  /*for(String url : LinkUtil.getAllLinks("https://www.drupal.org/drupalcon")){
+		  
+		  System.out.println("Url: "+url);
+		  
+	  }
+	  
 	 
 	  /*Mp3Spider spd = new GenericGoogleSearcher("mere sayian super star mp3 download");
 	  spd.run();
@@ -47,7 +65,7 @@ public class TestMain {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-	 }*/
+	 }
 	   SearchSpider crw = new MyMp3SingerSearchSpider("sahar dar sahar");
 	  crw.run();
 	  

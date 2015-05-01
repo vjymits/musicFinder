@@ -155,8 +155,8 @@ public class LinkUtil {
 				    		
 			}
 		}
-		catch(IOException ex){
-				
+		catch(Exception ex){
+				return null;
 			}
 		return result;
 			
@@ -197,6 +197,14 @@ public class LinkUtil {
     	 return doc;
     	 
  	}
+     
+    static public boolean isChildUrl(String url){
+    	return url.startsWith("/");
+    }
+    
+    static public String attachParentUrl(String domain, String url){
+    	return "https://"+domain+url;
+    }
 
 	
 	
