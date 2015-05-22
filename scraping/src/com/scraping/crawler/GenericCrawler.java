@@ -16,9 +16,6 @@ public class GenericCrawler extends Crawler implements Cloneable{
 		setConfigName(configName);
 		props = ConfigUtil.getProperties(ConfigUtil.getProperties(ConfigUtil.getConfigFile()).get(configName));
 		this.setMaxLevel(Integer.parseInt(props.get("maxlevel")));
-		
-		
-		
 	}
 	
 	public GenericCrawler(String url, int level, int maxLevel, String allowedUrls){

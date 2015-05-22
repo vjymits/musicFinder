@@ -1,5 +1,6 @@
 package com.vjy.test;
 
+import java.sql.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,6 +25,8 @@ import com.scraping.spider.mymp3singer.MyMp3SingerCrawler;
 import com.scraping.spider.mymp3singer.MyMp3SingerSearchSpider;
 import com.scraping.spider.xsongspk.XsongsPKCrawler;
 import com.scraping.spider.xsongspk.XsongsPKSearchSpider;
+import com.scraping.vo.song.SongDao;
+import com.scraping.vo.song.SongVO;
  
 /**
  * @author sharvija
@@ -32,16 +35,36 @@ import com.scraping.spider.xsongspk.XsongsPKSearchSpider;
 public class TestMain {
  
   public static void main(String[] args) {
+	 
+	  //System.out.println("Time: "+new );
+	  try {
+		 // SongDao dao = new SongDao("tmptable1");
+		//GenericAcquirer acq = new GenericAcquirer("db/indiamp3-config.properties");
+		//GenericAcquirer acq1 =  new GenericAcquirer("db/mymp3singer.config");
+		//GenericAcquirer djmp2fun1 = new GenericAcquirer("http://djmp3fun.com/files/download/id/$ID",69000,70000,"djmp3fun");
+		GenericAcquirer djmp2fun2 = new GenericAcquirer("http://djmp3fun.com/files/download/id/$ID",79726,81000,"djmp3fun");
+		GenericAcquirer djmp2fun3 = new GenericAcquirer("http://djmp3fun.com/files/download/id/$ID",89537,910000,"djmp3fun");
+		//acq1.start();
+		//acq.start();
+		//djmp2fun1.start();
+		djmp2fun2.start();
+		djmp2fun3.start();
+		
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 	  
-	  System.out.println(LinkUtil.getDomainName("https://www.drupal.org/drupalcon"));
+	  
+	  //System.out.println(LinkUtil.getDomainName("https://www.drupal.org/drupalcon"));
 	  /*String Parrenturl = "https://www.drupal.org/node/1588782";
 	  String url = "https://www.drupal.org/drupalcon";
 	  if(LinkUtil.isChildUrl(url))
 		  url= LinkUtil.attachParentUrl(LinkUtil.getDomainName(Parrenturl), url);
-	  System.out.println(url);
+	  System.out.println(url);*/
 	  
-	 // GenericWebSiteCrawler crw = new GenericWebSiteCrawler("https://www.drupal.org/",0,2,true);
-	  //crw.run();
+	  /*GenericWebSiteCrawler crw = new GenericWebSiteCrawler("https://www.drupal.org/",0,2,true);
+	  crw.run();
 	  
 	  /*for(String url : LinkUtil.getAllLinks("https://www.drupal.org/drupalcon")){
 		  

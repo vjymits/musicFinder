@@ -106,6 +106,7 @@ public class LinkUtil {
 	              connection.setInstanceFollowRedirects(false);
 	              connection.setUseCaches(false);
 	              connection.setRequestMethod("GET");
+	              connection.usingProxy();
 	              connection.connect();
 	              int responseCode = connection.getResponseCode();
 	              if (responseCode >=300 && responseCode <400)

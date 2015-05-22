@@ -1,0 +1,4 @@
+SELECT * FROM indiamp3 WHERE MATCH(song_url) AGAINST('ajj fir tumpe pyar') ORDER BY MATCH(song_url) AGAINST('ajj fir tumpe pyar') DESC limit 5;
+
+ALTER TABLE djmp3fun ADD FULLTEXT index_name(song_url);
+ALTER TABLE mymp3singer ENGINE = MYISAM

@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,14 +20,29 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.scarping.search.DBSearch;
 import com.scraping.link.Link;
 import com.scraping.link.LinkUtil;
 import com.scraping.link.LinkVO;
+import com.scraping.spider.Mp3Spider;
+import com.scraping.spider.generic.GenericGoogleSearcher;
 import com.scraping.spider.google.GoogleSpider;
  
 public class TestGoogle {
-	public static void main(String[] args) throws URISyntaxException, MalformedURLException, UnsupportedEncodingException{
-	GoogleSpider gs = new GoogleSpider("kuch door hamare saath chalo mp3");
+	public static void main(String[] args) throws URISyntaxException, MalformedURLException, UnsupportedEncodingException, SQLException{
+		
+		DBSearch s = new DBSearch("jiye to jiye");
+		s.search();
+		for(String one : s.getResult()){
+			System.out.println(one);
+		}
+		
+		/*Mp3Spider spd = new GenericGoogleSearcher("didi tera devar");
+		  spd.run();
+		  for(String url: spd.getAllMp3Links())
+			  System.out.println("mp3: "+url);
+		
+		/*GoogleSpider gs = new GoogleSpider("kuch door hamare saath chalo mp3");
 	gs.run();
 	Set<String> links = gs.getLinks();
 	if (links == null){
@@ -124,4 +140,4 @@ public class TestGoogle {
 	return result;
   }
  */
-}
+
