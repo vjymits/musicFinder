@@ -15,8 +15,8 @@ public interface Searcher {
 	Timestamp getTimestamp();
 	void setTimestamp(Timestamp time);
 	
-	String[] getResult();
-	void setResult(String[] res);
+	Set<String> getResult();
+	void setResult(Set<String> res);
 	
 	String toJSON();
 	

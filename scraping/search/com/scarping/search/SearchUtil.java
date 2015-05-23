@@ -1,6 +1,8 @@
 package com.scarping.search;
 
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import java.sql.Connection;
@@ -15,12 +17,12 @@ import com.scraping.vo.song.SongVO;
 
 public class SearchUtil {
 	
-	public static SongVO[] SearchInTable(String sql, int limit) throws SQLException{
+	public static Set<SongVO> SearchInTable(String sql) throws SQLException{
 		Connection con = DBConnection.getSingleConnection();
 		PreparedStatement pstmt = con.prepareStatement(sql);
 		ResultSet rs = pstmt.executeQuery();
-		SongVO[] set = new SongVO[limit];
-		int i=0;
+		LinkedHashSet<SongVO> set = new LinkedHashSet<SongVO>();
+		
 		while(rs.next()){
 			SongVO vo = new SongVO();
 			vo.setAlbum(rs.getString("album"));
@@ -33,7 +35,7 @@ public class SearchUtil {
 			//System.out.println(vo.getSongUrl());
 			vo.setTimestamp(rs.getDate("timestamp"));
 			vo.setStatus(rs.getInt("status"));
-			set[i++]=vo;
+			set.add(vo);
 		}
 		
 		return set;

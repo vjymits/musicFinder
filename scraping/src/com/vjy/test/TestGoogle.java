@@ -33,8 +33,9 @@ public class TestGoogle {
 		
 		DBSearch s = new DBSearch("jiye to jiye");
 		s.search();
-		for(String one : s.getResult()){
-			System.out.println(one);
+		System.out.println(s.toJSON());
+		/*for(int one : s.getSearchResult().keySet()){
+			System.out.println(s.getSearchResult().get(one));
 		}
 		
 		/*Mp3Spider spd = new GenericGoogleSearcher("didi tera devar");
