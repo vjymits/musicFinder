@@ -29,8 +29,8 @@ public class KoolwapSearchSpider implements Mp3Spider{
 		
 		this.query=query;
 		this.htmlUrl=this.htmlUrl+props.get("searchurl");
-		this.query=this.query.replace(" ", "-");
-		this.htmlUrl=this.htmlUrl.replace("w1-w2-w3", this.query);
+		String q=this.query.replace(" ", "-");
+		this.htmlUrl=this.htmlUrl.replace("w1-w2-w3", q);
 				
 	}
 	

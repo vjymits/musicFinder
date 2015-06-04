@@ -1,37 +1,116 @@
 package com.vjy.test;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import com.scarping.search.DBSearch;
-import com.scraping.link.Link;
-import com.scraping.link.LinkUtil;
-import com.scraping.link.LinkVO;
-import com.scraping.spider.Mp3Spider;
-import com.scraping.spider.generic.GenericGoogleSearcher;
-import com.scraping.spider.google.GoogleSpider;
+import com.scarping.search.searchquery.SearchQueryDao;
+import com.scarping.search.searchquery.SearchQueryVO;
+import com.scraping.db.DBConnection;
+import com.scraping.spider.koolwap.KoolwapSearchSpider;
+import com.scraping.spider.mp3mad.Mp3MadSpider;
+import com.scraping.spider.mp3skull.Mp3SkullSpider;
+import com.scraping.spider.xsongspk.XsongsPKSearchSpider;
+import com.scraping.vo.song.SongDao;
+import com.scraping.vo.song.SongVO;
  
 public class TestGoogle {
 	public static void main(String[] args) throws URISyntaxException, MalformedURLException, UnsupportedEncodingException, SQLException{
+		for(String q : getAlbum()){
+		//String q = new String("ankhiyo se goli mare");
+		//SearchQueryDao da= new SearchQueryDao();
+		//SearchQueryVO vo = new SearchQueryVO();
+		//vo.setQuery(q);
+		//da.persist(vo);
+		try{
+		XsongsPKSearchSpider xspd = new XsongsPKSearchSpider(q);
+		Mp3MadSpider mspd = new Mp3MadSpider(q);
+		KoolwapSearchSpider kspd = new KoolwapSearchSpider(q);
+		Mp3SkullSpider skullspd = new Mp3SkullSpider(q);
 		
-		DBSearch s = new DBSearch("jiye to jiye");
+		xspd.run();
+		Thread.sleep(1000);
+		mspd.run();
+		Thread.sleep(1000);
+		skullspd.run();
+		Thread.sleep(1000);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		//new Thread(kspd).start();
+		
+		}
+		/*
+		SearchQueryDao xDao = new SearchQueryDao("xsongspk_searchquery");
+		SearchQueryDao mp3MadDao = new SearchQueryDao("mp3mad_searchquery");
+		SearchQueryDao koolWap = new SearchQueryDao("koolwap_searchquery");*/
+		/*SearchQueryDao dao = new SearchQueryDao();
+		for(int i ='A'; i<='Z'; i++){
+		    SearchQueryVO vo = dao.selectOneById(i);
+		
+			String q = ""+i;
+			try{
+			XsongsPKSearchSpider xspd = new XsongsPKSearchSpider(q);
+			Mp3MadSpider mspd = new Mp3MadSpider(q);
+			KoolwapSearchSpider kspd = new KoolwapSearchSpider(q);
+			//new Thread(xspd).start();
+			//Thread.sleep(2000);
+			new Thread(kspd).start();
+			//Thread.sleep(2000);
+			//mspd.start()
+			//new Thread(mspd).start();
+			//new Thread(kspd).run();
+			
+				Thread.sleep(20000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+		/*SongDao dao = new SongDao("djmp3fun");
+		SearchQueryDao queryDao = new SearchQueryDao();
+		Connection con = DBConnection.getSingleConnection();
+		for(int i=1; i<79405; i++){
+			try{
+			SongVO one = dao.selectOneById(i);
+			String url = one.getSongUrl();
+			url = url.substring(url.lastIndexOf('/'));
+			int ind = url.indexOf('(');
+			if(ind == -1)
+				ind = url.lastIndexOf('@');
+			if(ind == -1)
+				ind= url.lastIndexOf('.');*/
+			/*if(ind == -1)
+				continue;
+			
+			String q = url.substring(url.lastIndexOf('/')+1, ind).trim();
+			q= q.replace('_', ' ').replace('-', ' ');
+			System.out.println("query: "+q);
+			
+			SearchQueryVO vo = new SearchQueryVO();
+			vo.setQuery(q);
+			queryDao.persist(vo, con);
+			Thread.sleep(1);
+			
+			}
+			catch (Exception e){
+				e.printStackTrace();
+			}
+						
+		}
+		//con.close();
+		
+		/*DBSearch s = new DBSearch("jiye to jiye");
 		s.search();
 		System.out.println(s.toJSON());
 		/*for(int one : s.getSearchResult().keySet()){
@@ -70,6 +149,32 @@ public class TestGoogle {
         System.out.println("Query: "+myUrl.getQuery());*/
         
 	}
+	
+	public static Set<String> getAlbum(){
+		  Set<String> set = new HashSet<String>();
+			SongDao dao = new SongDao();
+			for(SongVO vo : dao.selectAll()){
+				String url = vo.getSongUrl();
+				url = url.substring(0, url.lastIndexOf('/'));
+				//url = LinkUtil.removeSpaceFromUrl(url)(url);
+				
+				url = url.substring(url.lastIndexOf('/')+1);
+				url = url.replaceAll("%20", " ");
+				if(url.indexOf('(')!=-1)
+					url = url.substring(0, url.indexOf('('));
+				
+				if(url.indexOf('-')!=-1)
+					url = url.substring(0, url.indexOf('-'));
+				
+				url = url.trim();
+				
+				set.add(url);
+				
+			}
+			System.out.println("size: "+set.size());
+			return set;
+	  }
+	
 //	System.out.println("#"+setOfLinks.size());
 	
 }

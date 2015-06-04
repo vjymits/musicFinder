@@ -1,6 +1,7 @@
 package com.vjy.test;
 
 import java.sql.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,19 +37,21 @@ public class TestMain {
  
   public static void main(String[] args) {
 	 
-	  //System.out.println("Time: "+new );
+	  
+	  
+	    //System.out.println("Time: "+new );
 	  try {
 		 // SongDao dao = new SongDao("tmptable1");
 		//GenericAcquirer acq = new GenericAcquirer("db/indiamp3-config.properties");
 		//GenericAcquirer acq1 =  new GenericAcquirer("db/mymp3singer.config");
-		//GenericAcquirer djmp2fun1 = new GenericAcquirer("http://djmp3fun.com/files/download/id/$ID",69000,70000,"djmp3fun");
-		GenericAcquirer djmp2fun2 = new GenericAcquirer("http://djmp3fun.com/files/download/id/$ID",79726,81000,"djmp3fun");
-		GenericAcquirer djmp2fun3 = new GenericAcquirer("http://djmp3fun.com/files/download/id/$ID",89537,910000,"djmp3fun");
+		GenericAcquirer djmp2fun1 = new GenericAcquirer("http://djmp3fun.com/files/download/id/$ID",112000,114000,"djmp3fun");
+		GenericAcquirer djmp2fun2 = new GenericAcquirer("http://djmp3fun.com/files/download/id/$ID",109398,112000,"djmp3fun");
+		//GenericAcquirer djmp2fun3 = new GenericAcquirer("http://djmp3fun.com/files/download/id/$ID",100000,102000,"djmp3fun");
 		//acq1.start();
 		//acq.start();
 		//djmp2fun1.start();
 		djmp2fun2.start();
-		djmp2fun3.start();
+		//djmp2fun3.start();
 		
 	} catch (Exception e) {
 		// TODO Auto-generated catch block
@@ -215,6 +218,29 @@ public class TestMain {
 		e.printStackTrace();
 	}
  */
+  }
+  public Set<String> getAlbum(){
+	  Set<String> set = new HashSet<String>();
+		SongDao dao = new SongDao();
+		for(SongVO vo : dao.selectAll()){
+			String url = vo.getSongUrl();
+			url = url.substring(0, url.lastIndexOf('/'));
+			//url = LinkUtil.removeSpaceFromUrl(url)(url);
+			
+			url = url.substring(url.lastIndexOf('/')+1);
+			url = url.replaceAll("%20", " ");
+			if(url.indexOf('(')!=-1)
+				url = url.substring(0, url.indexOf('('));
+			
+			if(url.indexOf('-')!=-1)
+				url = url.substring(0, url.indexOf('-'));
+			
+			url = url.trim();
+			//System.out.println("album: "+url+" added : "+set.add(url));
+			set.add(url);
+			
+		}
+		return set;
   }
   
  

@@ -1,5 +1,6 @@
 package com.scraping.spider.mp3mad;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.Set;
 import com.scraping.db.ConfigUtil;
 import com.scraping.link.LinkUtil;
 import com.scraping.spider.Mp3Spider;
+import com.scraping.vo.song.SongDao;
+import com.scraping.vo.song.SongVO;
 
 public class Mp3MadSpider implements Mp3Spider{
 	
@@ -16,14 +19,15 @@ public class Mp3MadSpider implements Mp3Spider{
 	private String query;
 	private Set<String> allLinks;
 	private Set<String> allMp3Links;
+	private SongDao dao;
 	private Map<String,String> props = ConfigUtil.getProperties(ConfigUtil.getProperties(ConfigUtil.getConfigFile()).get("MP3MadConfigFile"));
 	
 	public Mp3MadSpider(String query){
 		
 		this.query=query.trim();
 		this.htmlUrl=this.htmlUrl+props.get("searchurl");
-		this.query=this.query.replaceAll(" ", "+");
-		this.htmlUrl=this.htmlUrl.replaceAll("qqqq", this.query);
+		String q =this.query.replaceAll(" ", "+");
+		this.htmlUrl=this.htmlUrl.replaceAll("qqqq", q);
 								
 	}
 	
@@ -38,12 +42,35 @@ public class Mp3MadSpider implements Mp3Spider{
 			allMp3Links.addAll(LinkUtil.getLinksOfExt(link, ".mp3"));
 						
 		}
+		addAllMp3InDB();
 		
 	}
 
 	@Override
 	public Set<String> getLinks() {
 		return allLinks;
+	}
+	
+	public int addAllMp3InDB() {
+		String tableName = props.get("tablename");
+		SongDao dao = new SongDao(tableName);
+		int c = 0;
+		for (String mp3 : allMp3Links){
+			SongVO vo = new SongVO();
+			vo.setSongUrl(mp3);
+			vo.setSongUri(mp3);
+			System.out.println("mp3: "+mp3);
+			vo.setSearchQueries(query);
+			vo.setStatus(0);
+			try {
+				dao.persist(vo);
+				c++;
+			} catch (SQLException e) {
+				
+				e.printStackTrace();
+			}
+		}
+		return c;
 	}
 	
 	private Set<String> getAllLinks(){
@@ -62,7 +89,7 @@ public class Mp3MadSpider implements Mp3Spider{
 		String domain = LinkUtil.getDomainName(url);
 		if(allowedDomainList.contains(domain) && (LinkUtil.getExt(url).equalsIgnoreCase(".html")))
 			flag = true;
-		System.out.println("URL: "+url+"\ndomain: "+domain+"\nflag: "+flag);
+		//System.out.println("URL: "+url+"\ndomain: "+domain+"\nflag: "+flag);
 		return flag;
 		
 		

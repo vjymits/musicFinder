@@ -26,3 +26,13 @@ create table if not exists `music`.`songs`(
     fulltext search_idx(`song_url`,`artists`,`album`,`Searchq`)
 
 )engine=myisam;
+
+DROP table if exists `music`.`searchquery`;
+create table if not exists `music`.`searchquery`(
+	`id` bigint unsigned primary key AUTO_INCREMENT,
+	`query` varchar(256) UNIQUE,
+	`jsonpath` varchar(256) UNIQUE,
+	`result` varchar(256),
+	`timestamp` datetime,
+	fulltext search_query_idx(`query`)
+)engine=myisam;

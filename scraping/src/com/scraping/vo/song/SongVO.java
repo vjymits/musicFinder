@@ -1,6 +1,7 @@
 package com.scraping.vo.song;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 public class SongVO {
 	
@@ -12,7 +13,7 @@ public class SongVO {
 	
 	int status=-1;
 	
-	Date timestamp = new Date(System.currentTimeMillis());
+	Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
 	public long getId() {
 		return id;
@@ -78,11 +79,11 @@ public class SongVO {
 		this.status = status;
 	}
 
-	public Date getTimestamp() {
+	public Timestamp getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(Date timestamp) {
+	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
 	}		
 	

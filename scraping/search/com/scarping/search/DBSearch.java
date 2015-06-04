@@ -85,7 +85,7 @@ public class DBSearch implements Searcher{
 
 	@Override
 	public String toJSON() {
-		return JSONObject.toString(query, this.searchResult);
+		return "{"+JSONObject.toString(query, this.searchResult)+"}";
 		
 	}
 	

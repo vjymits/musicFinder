@@ -2,6 +2,7 @@ package com.scraping.crawler;
 
 import java.sql.SQLException;
 
+import com.scraping.db.BaseDao;
 import com.scraping.link.LinkUtil;
 import com.scraping.vo.song.SongDao;
 import com.scraping.vo.song.SongVO;
@@ -11,7 +12,7 @@ public abstract class Crawler extends Thread{
 	
 	private String url;
 	
-	
+	protected SongDao dao;
 	
 	private int level = 0;
 	private int maxLevel=1;
@@ -20,6 +21,11 @@ public abstract class Crawler extends Thread{
 	protected Crawler( String url, int level){
 		setUrl(url);
 		setLevel(level);
+		dao = new SongDao();
+	}
+	public Crawler(String url, int level, String tableName){
+		this(url,level);
+		dao = new SongDao(tableName);
 	}
 	
 	 
@@ -57,7 +63,6 @@ public abstract class Crawler extends Thread{
 		SongVO vo = new SongVO();
 		vo.setSongUrl(getUrl());
 		vo.setStatus(0);
-		SongDao dao = SongDao.getDao();
 		try {
 			dao.persist(vo);
 		} catch (SQLException e) {

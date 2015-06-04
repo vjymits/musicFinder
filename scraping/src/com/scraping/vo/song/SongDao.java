@@ -2,8 +2,10 @@ package com.scraping.vo.song;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
@@ -20,7 +22,7 @@ public class SongDao implements BaseDao<SongVO>{
 	
 	public SongDao(String table){
 		this.tableName = table;
-		createTableIfNotExist();
+		
 	}
 	
 	
@@ -67,7 +69,7 @@ public class SongDao implements BaseDao<SongVO>{
 		preparedStatement.setString(2, obj.getSongUri());
 		preparedStatement.setString(3, obj.getSongUrl());
 		preparedStatement.setInt(4, obj.getStatus());
-		preparedStatement.setDate(5, obj.getTimestamp());
+		preparedStatement.setTimestamp(5, obj.getTimestamp());
 		preparedStatement.setString(6, obj.getArtist());
 		preparedStatement.setString(7, obj.getAlbum());
 		preparedStatement.setString(8, obj.getSearchQueries());
@@ -75,7 +77,10 @@ public class SongDao implements BaseDao<SongVO>{
 		
 		}
 		catch(MySQLIntegrityConstraintViolationException ex){
-			System.out.println( "url: "+obj.getSongUrl() +"is already there, nd uri: "+obj.getSongUri());
+			System.out.println( "DUPLICATE URL: "+obj.getSongUrl() +" And uri: "+obj.getSongUri());
+		}
+		catch(SQLException ex){
+			createTableIfNotExist();
 		}
 		finally{
 			con.close();
@@ -101,13 +106,68 @@ public class SongDao implements BaseDao<SongVO>{
 
 	@Override
 	public List<SongVO> selectAll() {
-		// TODO Auto-generated method stub
+		String query = "select * from "+tableName;
+		List<SongVO> listOfSongs = new ArrayList<SongVO>();
+		Connection con = DBConnection.getSingleConnection();
+		try {
+			PreparedStatement pstmt = con.prepareStatement(query);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()){
+				SongVO vo = new SongVO();
+				vo.setAlbum(rs.getString("album"));
+				vo.setArtist(rs.getString("artists"));
+				vo.setId(rs.getLong("id"));
+				vo.setSearchQueries(rs.getString("searchq"));
+				vo.setSongId(rs.getLong("song_id"));
+				vo.setSongUri(rs.getString("song_uri"));
+				vo.setSongUrl(rs.getString("song_url"));
+				//System.out.println(vo.getSongUrl());
+				vo.setTimestamp(rs.getTimestamp("timestamp"));
+				vo.setStatus(rs.getInt("status"));
+				listOfSongs.add(vo);
+			}
+			return listOfSongs;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return null;
 	}
 
 	@Override
-	public List<SongVO> selectOneById(long id) {
-		// TODO Auto-generated method stub
+	public SongVO selectOneById(long id) throws SQLException {
+		String query = "select * from "+tableName+" where id = ?";
+		//List<SongVO> listOfSongs = new ArrayList<SongVO>();
+		Connection con = DBConnection.getSingleConnection();
+		SongVO vo = null;
+		try {
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setLong(1, id);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()){
+				vo = new SongVO();
+				vo.setAlbum(rs.getString("album"));
+				vo.setArtist(rs.getString("artists"));
+				vo.setId(rs.getLong("id"));
+				vo.setSearchQueries(rs.getString("searchq"));
+				vo.setSongId(rs.getLong("song_id"));
+				vo.setSongUri(rs.getString("song_uri"));
+				vo.setSongUrl(rs.getString("song_url"));
+				//System.out.println(vo.getSongUrl());
+				vo.setTimestamp(rs.getTimestamp("timestamp"));
+				vo.setStatus(rs.getInt("status"));
+				
+			}
+			return vo;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			con.close();
+		}
 		return null;
 	}
 

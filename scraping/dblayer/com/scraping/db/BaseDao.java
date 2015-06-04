@@ -10,7 +10,7 @@ public interface BaseDao<T> {
 	int update(long id,T obj) throws SQLException;
 	int delete(long id);
 	List<T> selectAll();
-	List<T> selectOneById(long id);
+	T selectOneById(long id) throws SQLException;
 	
 	
 	

@@ -27,7 +27,7 @@ public class XsongsPKSearchSpider implements Mp3Spider,SearchSpider{
 	@Override
 	public void run() {
 		
-		    System.out.println("htmlUrl: "+this.htmlUrl);
+		    //System.out.println("htmlUrl: "+this.htmlUrl);
 			Crawler crw = new XsongsPKCrawler(this.htmlUrl, 0);	
 			crw.start();
 						

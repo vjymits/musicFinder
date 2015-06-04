@@ -76,7 +76,7 @@ public class IndiaMp3Dao implements BaseDao<IndiaMp3VO>{
 	}
 
 	@Override
-	public List<IndiaMp3VO> selectOneById(long id) {
+	public IndiaMp3VO selectOneById(long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

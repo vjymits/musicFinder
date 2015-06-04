@@ -1,17 +1,12 @@
 package com.scarping.search;
 
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-import java.sql.PreparedStatement;
-import com.scraping.db.ConfigUtil;
-import com.scraping.db.ConnectionsPool;
 import com.scraping.db.DBConnection;
 import com.scraping.vo.song.SongVO;
 
@@ -33,7 +28,7 @@ public class SearchUtil {
 			vo.setSongUri(rs.getString("song_uri"));
 			vo.setSongUrl(rs.getString("song_url"));
 			//System.out.println(vo.getSongUrl());
-			vo.setTimestamp(rs.getDate("timestamp"));
+			vo.setTimestamp(rs.getTimestamp("timestamp"));
 			vo.setStatus(rs.getInt("status"));
 			set.add(vo);
 		}

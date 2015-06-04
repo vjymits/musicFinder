@@ -1,6 +1,7 @@
 package com.scraping.spider.mp3skull;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +14,8 @@ import org.jsoup.select.Elements;
 import com.scraping.db.ConfigUtil;
 import com.scraping.link.LinkUtil;
 import com.scraping.spider.Mp3Spider;
+import com.scraping.vo.song.SongDao;
+import com.scraping.vo.song.SongVO;
 
 public class Mp3SkullSpider implements Mp3Spider{
 	
@@ -34,7 +37,29 @@ public class Mp3SkullSpider implements Mp3Spider{
 	@Override
 	public void run() {
 		allLinks = getAllLinks();
-		
+		addAllMp3InDB();
+	}
+	
+	public int addAllMp3InDB() {
+		String tableName = props.get("tablename");
+		SongDao dao = new SongDao(tableName);
+		int c = 0;
+		for (String mp3 : allMp3Links){
+			SongVO vo = new SongVO();
+			vo.setSongUrl(mp3);
+			vo.setSongUri(mp3);
+			System.out.println("mp3: "+mp3);
+			vo.setSearchQueries(query);
+			vo.setStatus(0);
+			try {
+				dao.persist(vo);
+				c++;
+			} catch (SQLException e) {
+				
+				e.printStackTrace();
+			}
+		}
+		return c;
 	}
 
 	@Override
