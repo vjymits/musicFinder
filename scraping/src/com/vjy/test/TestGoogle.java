@@ -26,7 +26,7 @@ public class TestGoogle {
 		DBSearch s = new DBSearch("kahte hai khuda");
 		s.search();
 		System.out.println(s.toJSON());
-		for(int one : s.getSearchResult().keySet()){
+		/*for(int one : s.getSearchResult().keySet()){
 			System.out.println(s.getSearchResult().get(one));
 		}
 		
