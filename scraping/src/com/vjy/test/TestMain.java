@@ -44,14 +44,15 @@ public class TestMain {
 		 // SongDao dao = new SongDao("tmptable1");
 		//GenericAcquirer acq = new GenericAcquirer("db/indiamp3-config.properties");
 		//GenericAcquirer acq1 =  new GenericAcquirer("db/mymp3singer.config");
-		GenericAcquirer djmp2fun1 = new GenericAcquirer("http://djmp3fun.com/files/download/id/$ID",112000,114000,"djmp3fun");
-		GenericAcquirer djmp2fun2 = new GenericAcquirer("http://djmp3fun.com/files/download/id/$ID",109398,112000,"djmp3fun");
+		GenericAcquirer djmp2fun1 = new GenericAcquirer("http://djmp3fun.com/files/download/id/$ID",116000,117000,"djmp3fun");
+		GenericAcquirer djmp2fun2 = new GenericAcquirer("http://djmp3fun.com/files/download/id/$ID",117000,118000,"djmp3fun");
 		//GenericAcquirer djmp2fun3 = new GenericAcquirer("http://djmp3fun.com/files/download/id/$ID",100000,102000,"djmp3fun");
 		//acq1.start();
 		//acq.start();
 		//djmp2fun1.start();
 		djmp2fun2.start();
-		//djmp2fun3.start();
+		
+		djmp2fun1.start();
 		
 	} catch (Exception e) {
 		// TODO Auto-generated catch block

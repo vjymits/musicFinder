@@ -22,13 +22,20 @@ import com.scraping.vo.song.SongVO;
  
 public class TestGoogle {
 	public static void main(String[] args) throws URISyntaxException, MalformedURLException, UnsupportedEncodingException, SQLException{
-		for(String q : getAlbum()){
+		
+		DBSearch s = new DBSearch("kahte hai khuda");
+		s.search();
+		System.out.println(s.toJSON());
+		for(int one : s.getSearchResult().keySet()){
+			System.out.println(s.getSearchResult().get(one));
+		}
+		
 		//String q = new String("ankhiyo se goli mare");
 		//SearchQueryDao da= new SearchQueryDao();
 		//SearchQueryVO vo = new SearchQueryVO();
 		//vo.setQuery(q);
 		//da.persist(vo);
-		try{
+		/*try{
 		XsongsPKSearchSpider xspd = new XsongsPKSearchSpider(q);
 		Mp3MadSpider mspd = new Mp3MadSpider(q);
 		KoolwapSearchSpider kspd = new KoolwapSearchSpider(q);
@@ -108,7 +115,7 @@ public class TestGoogle {
 			}
 						
 		}
-		//con.close();
+		//con.close();*/
 		
 		/*DBSearch s = new DBSearch("jiye to jiye");
 		s.search();

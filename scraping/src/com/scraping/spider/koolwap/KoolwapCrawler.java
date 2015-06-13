@@ -10,6 +10,7 @@ import com.scraping.db.ConfigUtil;
 import com.scraping.link.LinkUtil;
 import com.scraping.vo.song.SongVO;
 
+
 public class KoolwapCrawler extends Crawler{
 	
 	
