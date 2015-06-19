@@ -1,4 +1,4 @@
-package com.scarping.search;
+package com.scraping.search;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

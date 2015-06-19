@@ -1,4 +1,4 @@
-package com.scarping.search.searchquery;
+package com.scraping.search.searchquery;
 
 import java.sql.Timestamp;
 

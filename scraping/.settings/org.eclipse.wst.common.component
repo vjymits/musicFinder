@@ -3,9 +3,7 @@
     <wb-module deploy-name="scraping">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/dblayer"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/crawler"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/search"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/api"/>
         <property name="context-root" value="scraping"/>
         <property name="java-output-path" value="/scraping/bin"/>

@@ -85,7 +85,18 @@ public class SongVO {
 
 	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
-	}		
+	}
+	public String getNameByUrl(){
+		String name = getSongUrl().substring(getSongUrl().lastIndexOf('/')+1);
+		return name;
+	}
+	
+	public String toString(){
+		String json = "[id:"+getId()+"album:"+getAlbum()+"status:"+getStatus()+"songUri:"+getSongUri()+"songUrl:"+getSongUrl()+"name:"+getNameByUrl()+"]";
+		return json;
+		
+		
+	}
 	
 
 }

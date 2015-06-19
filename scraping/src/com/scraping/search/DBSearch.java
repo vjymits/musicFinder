@@ -1,5 +1,6 @@
-package com.scarping.search;
+package com.scraping.search;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -14,6 +15,10 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -26,6 +31,7 @@ public class DBSearch implements Searcher{
 	String query;
 	Set<String> result;
 	Map<Integer,Set<String>> searchResult;
+	Set<SongVO> resultVOs = new HashSet<SongVO>();
 	Timestamp timestamp;
 	long id;
 	
@@ -85,7 +91,25 @@ public class DBSearch implements Searcher{
 
 	@Override
 	public String toJSON() {
-		return "{"+JSONObject.toString(query, this.searchResult)+"}";
+		System.err.println("search Result: "+resultVOs);
+		//JSONObject json = new JSONObject();
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		String json="";
+		try {
+			json = ow.writeValueAsString(this.resultVOs);
+		} catch (JsonGenerationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//String jsonMap  = JSONObject.toJSONString(this.searchResult);
+		
+		return "{"+"\""+this.query+"\":"+json+"}";
 		
 	}
 	
@@ -114,6 +138,7 @@ public class DBSearch implements Searcher{
 				    set.add(one.getSongUri());   
 					this.searchResult.put(j,set);
 					this.result.add(one.getSongUrl());
+					this.resultVOs.add(one);
 				}
 				j++;
 			}

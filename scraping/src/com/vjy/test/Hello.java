@@ -1,5 +1,7 @@
 package com.vjy.test;
 
+import java.util.Map;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -7,6 +9,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+
+import com.scraping.db.ConfigUtil;
 
 
 // Plain old Java Object it does not extend as class or implements 
@@ -39,6 +43,7 @@ public class Hello {
   @GET
   @Produces(MediaType.TEXT_XML)
   public String sayXMLHello() {
+	  
     return "<?xml version=\"1.0\"?>" + "<hello> Hello Vijay, U r amazing, U'll rule one day Insha Allaha" + "</hello>";
   }
 
@@ -46,8 +51,10 @@ public class Hello {
   @GET
   @Produces(MediaType.TEXT_HTML)
   public String sayHtmlHello() {
+	  Map<String, String> props = ConfigUtil.getProperties(ConfigUtil.getProperties(ConfigUtil.getConfigFile()).get("dbsearchConfigFile"));
+	  String tables = props.get("tables").trim();
     return "<html> " + "<title>" + "Hello Vijay, U r amazing, U'll rule one day Insha Allaha" + "</title>"
-        + "<body><h1>" + "Hello Jersey" + "</body></h1>" + "</html> ";
+        + "<body><h1>" + "Hello Jersey  : "+tables + "</body></h1>" + "</html> ";
   }
 
 } 

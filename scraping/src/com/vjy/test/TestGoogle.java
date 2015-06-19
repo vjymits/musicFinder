@@ -3,20 +3,11 @@ package com.vjy.test;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import com.scarping.search.DBSearch;
-import com.scarping.search.searchquery.SearchQueryDao;
-import com.scarping.search.searchquery.SearchQueryVO;
-import com.scraping.db.DBConnection;
-import com.scraping.spider.koolwap.KoolwapSearchSpider;
-import com.scraping.spider.mp3mad.Mp3MadSpider;
-import com.scraping.spider.mp3skull.Mp3SkullSpider;
-import com.scraping.spider.xsongspk.XsongsPKSearchSpider;
+import com.scraping.search.DBSearch;
 import com.scraping.vo.song.SongDao;
 import com.scraping.vo.song.SongVO;
  

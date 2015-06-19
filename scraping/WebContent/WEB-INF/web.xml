@@ -15,6 +15,6 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>Jersey REST Service</servlet-name>
-    <url-pattern>/jersey/*</url-pattern>
+    <url-pattern>/mp3/*</url-pattern>
   </servlet-mapping>
 </web-app> 

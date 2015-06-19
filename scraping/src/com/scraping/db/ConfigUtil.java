@@ -38,7 +38,9 @@ public class ConfigUtil {
 	}
 	
 	public static String getConfigFile(){
-		return "db/db-config.properties";
+		File f = new File(".");
+		System.err.println("current file: "+f.getAbsolutePath());
+		return "D:\\etc\\apache-tomcat-6.0.44\\webapps\\scraping\\WEB-INF\\db\\db-config.properties";
 	}
 		
 		
