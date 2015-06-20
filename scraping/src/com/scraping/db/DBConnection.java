@@ -7,7 +7,7 @@ import java.util.Map;
 public class DBConnection {
 
 	
-	static private Map<String,String> propMap = ConfigUtil.getProperties("webapps/scraping/WEB-INF/db/db-config.properties");
+	static private Map<String,String> propMap = ConfigUtil.getProperties(ConfigUtil.getConfigFile());
 	private static ConnectionsPool pool;
 	
 	static{
