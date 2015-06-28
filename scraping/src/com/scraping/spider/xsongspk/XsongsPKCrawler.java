@@ -8,6 +8,7 @@ import java.util.Map;
 import com.scraping.crawler.Crawler;
 import com.scraping.db.ConfigUtil;
 import com.scraping.link.LinkUtil;
+import com.scraping.search.SearchUtil;
 import com.scraping.vo.song.SongVO;
 
 public class XsongsPKCrawler extends Crawler{
@@ -26,6 +27,8 @@ public class XsongsPKCrawler extends Crawler{
 
 	private Map<String,String> props = ConfigUtil.getProperties(ConfigUtil.getProperties(ConfigUtil.getConfigFile()).get("xsongsPKConfigFile"));
     private String tableName = props.get("tablename");
+    
+    
     
 	@Override
 	public boolean isCrawlable() {
@@ -53,6 +56,7 @@ public class XsongsPKCrawler extends Crawler{
 			
 			int level = getLevel();
 			XsongsPKCrawler crw = new XsongsPKCrawler(link,++level,tableName);
+			
 			crw.setName("xsongspk_Thread_level_"+level);
 			crw.start();
 		
@@ -66,6 +70,7 @@ public class XsongsPKCrawler extends Crawler{
 		vo.setSongUrl(getUrl());
 		vo.setSongUri(getUrl());
 		vo.setStatus(0);
+		
 		try {
 			dao.persist(vo);
 		} catch (SQLException e) {

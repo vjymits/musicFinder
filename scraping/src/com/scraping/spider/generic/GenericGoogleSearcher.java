@@ -17,12 +17,14 @@ import com.scraping.vo.song.SongDao;
 import com.scraping.vo.song.SongVO;
 
 public class GenericGoogleSearcher implements Mp3Spider{
-	private static SongDao dao = new SongDao("GenericGoogleSearcher");
+	
 	private String query ;
+	private static String table = "GenericGoogleSearcher";
 	private GoogleSpider gs;
 	private Set<String> mp3Links;
 	private Set<SongVO> resultVOs = new HashSet<SongVO>();;
 	private Set<String> GLinks;
+	private static SongDao dao = new SongDao(table);
 	public GenericGoogleSearcher(String query){
 		this.query = query;
 	}
@@ -30,6 +32,9 @@ public class GenericGoogleSearcher implements Mp3Spider{
 	@Override
 	public Set<String> getLinks() {
 		return this.GLinks;
+	}
+	public static String getTable(){
+		return table;
 	}
 
 	@Override

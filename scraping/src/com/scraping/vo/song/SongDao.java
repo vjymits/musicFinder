@@ -134,6 +134,38 @@ public class SongDao implements BaseDao<SongVO>{
 		}
 		return null;
 	}
+	
+	
+	public List<SongVO> selectAllByQuery(String query){
+		String sql = "select * from "+tableName+" where Searchq = ?";
+		List<SongVO> listOfSongs = new ArrayList<SongVO>();
+		Connection con = DBConnection.getSingleConnection();
+		try {
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, query);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()){
+				SongVO vo = new SongVO();
+				vo.setAlbum(rs.getString("album"));
+				vo.setArtist(rs.getString("artists"));
+				vo.setId(rs.getLong("id"));
+				vo.setSearchQueries(rs.getString("searchq"));
+				vo.setSongId(rs.getLong("song_id"));
+				vo.setSongUri(rs.getString("song_uri"));
+				vo.setSongUrl(rs.getString("song_url"));
+				//System.out.println(vo.getSongUrl());
+				vo.setTimestamp(rs.getTimestamp("timestamp"));
+				vo.setStatus(rs.getInt("status"));
+				listOfSongs.add(vo);
+			}
+			return listOfSongs;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	@Override
 	public SongVO selectOneById(long id) throws SQLException {

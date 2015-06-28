@@ -13,6 +13,7 @@ import org.jsoup.select.Elements;
 
 import com.scraping.db.ConfigUtil;
 import com.scraping.link.LinkUtil;
+import com.scraping.search.SearchUtil;
 import com.scraping.spider.Mp3Spider;
 import com.scraping.vo.song.SongDao;
 import com.scraping.vo.song.SongVO;
@@ -43,6 +44,7 @@ public class Mp3SkullSpider implements Mp3Spider{
 	public int addAllMp3InDB() {
 		String tableName = props.get("tablename");
 		SongDao dao = new SongDao(tableName);
+		Set<SongVO> set = SearchUtil.getSearchResultSet(query);
 		int c = 0;
 		for (String mp3 : allMp3Links){
 			SongVO vo = new SongVO();
@@ -51,6 +53,7 @@ public class Mp3SkullSpider implements Mp3Spider{
 			System.out.println("mp3: "+mp3);
 			vo.setSearchQueries(query);
 			vo.setStatus(0);
+			set.add(vo);
 			try {
 				dao.persist(vo);
 				c++;

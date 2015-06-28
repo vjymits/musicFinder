@@ -29,6 +29,7 @@ public class XsongsPKSearchSpider implements Mp3Spider,SearchSpider{
 		
 		    //System.out.println("htmlUrl: "+this.htmlUrl);
 			Crawler crw = new XsongsPKCrawler(this.htmlUrl, 0);	
+			crw.setSearchResultSetName(this.query);
 			crw.start();
 						
 	}
@@ -71,8 +72,8 @@ public class XsongsPKSearchSpider implements Mp3Spider,SearchSpider{
 	@Override
 	public String createUrl() {
 		this.htmlUrl=this.htmlUrl+props.get("searchurl");
-		this.query=this.query.replace(" ", "-");
-		this.htmlUrl=this.htmlUrl.replace("w1-w2-w3", this.query);
+		String query=this.query.replace(" ", "-");
+		this.htmlUrl=this.htmlUrl.replace("w1-w2-w3", query);
 		return htmlUrl;
 	}
 }

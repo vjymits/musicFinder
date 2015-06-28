@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.scraping.db.ConfigUtil;
 import com.scraping.link.LinkUtil;
+import com.scraping.search.SearchUtil;
 import com.scraping.spider.Mp3Spider;
 import com.scraping.vo.song.SongDao;
 import com.scraping.vo.song.SongVO;
@@ -24,7 +25,7 @@ public class Mp3MadSpider implements Mp3Spider{
 	
 	public Mp3MadSpider(String query){
 		
-		this.query=query.trim();
+		
 		this.htmlUrl=this.htmlUrl+props.get("searchurl");
 		String q =this.query.replaceAll(" ", "+");
 		this.htmlUrl=this.htmlUrl.replaceAll("qqqq", q);
@@ -55,6 +56,7 @@ public class Mp3MadSpider implements Mp3Spider{
 		String tableName = props.get("tablename");
 		SongDao dao = new SongDao(tableName);
 		int c = 0;
+		Set<SongVO> set = SearchUtil.getSearchResultSet(query);
 		for (String mp3 : allMp3Links){
 			SongVO vo = new SongVO();
 			vo.setSongUrl(mp3);
@@ -62,6 +64,7 @@ public class Mp3MadSpider implements Mp3Spider{
 			System.out.println("mp3: "+mp3);
 			vo.setSearchQueries(query);
 			vo.setStatus(0);
+			set.add(vo);
 			try {
 				dao.persist(vo);
 				c++;

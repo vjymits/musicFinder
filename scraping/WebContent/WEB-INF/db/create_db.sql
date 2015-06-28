@@ -36,3 +36,16 @@ create table if not exists `music`.`searchquery`(
 	`timestamp` datetime,
 	fulltext search_query_idx(`query`)
 )engine=myisam;
+
+DROP table if exists `music`.`async_search`;
+create table if not exists `music`.`async_search`(
+	`id` bigint unsigned primary key AUTO_INCREMENT,
+	`uuid` varchar(40)
+	`query` varchar(256),
+	`result_uri` varchar(256) UNIQUE,
+	`search_type` varchar(256),
+	`tables` varchar(256),
+	`timeinMS` bigint,
+	`timestamp` datetime
+	
+)engine=myisam;
