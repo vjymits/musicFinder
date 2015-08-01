@@ -8,25 +8,31 @@ import java.util.Map;
 import com.scraping.crawler.Crawler;
 import com.scraping.db.ConfigUtil;
 import com.scraping.link.LinkUtil;
-import com.scraping.search.SearchUtil;
+import com.scraping.vo.song.SongDao;
 import com.scraping.vo.song.SongVO;
 
 public class XsongsPKCrawler extends Crawler{
 	
-	public XsongsPKCrawler(String url, int level, String table) {
-		super(url, level,table);
+	private String query;
+	private SongDao songDao;
+	
+	
+	public XsongsPKCrawler(String url, int level, String q) {
+		super(url, level);
+		this.query = q;
 		this.setMaxLevel(Integer.parseInt(props.get("maxlevel")));
-		
+		this.tableName = props.get("tablename");
+		this.songDao = new SongDao(getTable());
 	}
 	
-	public XsongsPKCrawler(String url, int level) {
-		super(url, level);
-		this.setMaxLevel(Integer.parseInt(props.get("maxlevel")));
-		
-	}
+	
 
-	private Map<String,String> props = ConfigUtil.getProperties(ConfigUtil.getProperties(ConfigUtil.getConfigFile()).get("xsongsPKConfigFile"));
-    private String tableName = props.get("tablename");
+	private static Map<String,String> props = ConfigUtil.getProperties(ConfigUtil.getProperties(ConfigUtil.getConfigFile()).get("xsongsPKConfigFile"));
+    private String tableName ;
+    
+    public String getTable(){
+    	return tableName;
+    }
     
     
     
@@ -45,18 +51,18 @@ public class XsongsPKCrawler extends Crawler{
 				flag = false;
 			}				
 		}		
-		System.out.println("Req: "+url+" Flag: "+flag);
+		//System.out.println("Req: "+url+" Flag: "+flag);
 		return flag;
 	}
 
 	@Override
 	public void crawl() {
-		
+		System.out.println("-----------XsongsPKCrawler----------");		
 		for(String link : LinkUtil.getAllLinks(getUrl())){
 			
 			int level = getLevel();
-			XsongsPKCrawler crw = new XsongsPKCrawler(link,++level,tableName);
-			
+			XsongsPKCrawler crw = new XsongsPKCrawler(link,++level,this.query);
+			//crw.setQuery(this.query);
 			crw.setName("xsongspk_Thread_level_"+level);
 			crw.start();
 		
@@ -71,8 +77,15 @@ public class XsongsPKCrawler extends Crawler{
 		vo.setSongUri(getUrl());
 		vo.setStatus(0);
 		
+		String name = getUrl();
+		name = name.substring(0,name.lastIndexOf('/'));
+		name = name.substring(name.lastIndexOf('/')+1);
+		vo.setTitle(name);
+		System.out.println("xsongspk : query: "+this.query);
+		vo.setSearchQueries(this.query);
+		
 		try {
-			dao.persist(vo);
+			songDao.persist(vo);
 		} catch (SQLException e) {
 			System.out.println("Skiping to add in DB, mp3: "+getUrl());
 			e.printStackTrace();

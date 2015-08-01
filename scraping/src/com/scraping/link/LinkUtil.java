@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,6 +14,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.scraping.db.ConfigUtil;
 
 public class LinkUtil {
 
@@ -205,6 +208,22 @@ public class LinkUtil {
     
     static public String attachParentUrl(String domain, String url){
     	return "https://"+domain+url;
+    }
+    
+    public static boolean isUrlAllowed(String url, String domain)
+    {
+    	String prefix = "allowed-urls-";
+    	String component = prefix+domain;
+    	Map<String,String> allowedUrls = ConfigUtil.getConfigByComponent(component);
+    	if (allowedUrls == null)
+    		return false;
+    	for(String key : allowedUrls.keySet()){
+    		String val = allowedUrls.get(key);
+    		if(url.contains(val))
+    			return true;
+    		
+    	}
+    	return false;
     }
 
 	

@@ -7,14 +7,24 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.scraping.link.LinkUtil;
 import com.scraping.search.DBSearch;
+import com.scraping.spider.generic.GenericSpider;
 import com.scraping.vo.song.SongDao;
 import com.scraping.vo.song.SongVO;
  
 public class TestGoogle {
 	public static void main(String[] args) throws URISyntaxException, MalformedURLException, UnsupportedEncodingException, SQLException{
 		
-		DBSearch s = new DBSearch("kahte hai khuda");
+		
+		String str = "http://www.mp3pm.com/song/37082935/roks_arz_-_jena_hai/";
+		GenericSpider spd = new GenericSpider(str);
+		spd.run();
+		System.out.println(spd.getLinks());
+		System.out.println(spd.getAllMp3Links());
+		//System.out.println(LinkUtil.getAllLinks(str));
+		//System.out.println("Mp3: "+LinkUtil.getLinksOfExt(str, ".mp3"));
+		/*DBSearch s = new DBSearch("kahte hai khuda");
 		s.search();
 		System.out.println(s.toJSON());
 		/*for(int one : s.getSearchResult().keySet()){

@@ -9,7 +9,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import com.scraping.config.ConfigDao;
+
 public class ConfigUtil {
+	
+	private static ConfigDao cnfDao = new ConfigDao();
+	
 	
 	public static Map<String,String> getProperties(String filename){
 		
@@ -42,7 +47,14 @@ public class ConfigUtil {
 		System.err.println("current file: "+f.getAbsolutePath());
 		return "D:\\etc\\apache-tomcat-6.0.44\\webapps\\scraping\\WEB-INF\\db\\db-config.properties";
 	}
-		
+	
+	public static String getConfigValue(String name){
+		return cnfDao.getValueByName(name);
+	}
+	
+	public static Map<String,String> getConfigByComponent(String comp){
+		return cnfDao.selectAllByComponent(comp);
+	}
 		
 
 	

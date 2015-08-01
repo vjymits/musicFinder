@@ -1,17 +1,13 @@
 package com.scraping.spider.findmp3;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.scraping.db.ConfigUtil;
 import com.scraping.link.LinkUtil;
-import com.scraping.search.SearchUtil;
 import com.scraping.spider.Mp3Spider;
 import com.scraping.spider.generic.GenericSpider;
-
 import com.scraping.vo.song.SongDao;
 import com.scraping.vo.song.SongVO;
 
@@ -20,12 +16,16 @@ public class FindMp3Spider implements Mp3Spider {
 	private String query;
 	private String htmlUrl="";
 	
-	private Set<SongVO> searchResult;
 	private Map<String,String> props = ConfigUtil.getProperties(ConfigUtil.getProperties(ConfigUtil.getConfigFile()).get("FindMp3ConfigFile"));
-	private SongDao dao = new SongDao(props.get("table"));
+	private String table = props.get("tablename");
+	private SongDao dao = new SongDao(table);
 	public FindMp3Spider(String query){
 		this.query=query;
-		searchResult = SearchUtil.getSearchResultSet(query);
+		
+	}
+	
+	public String getTable(){
+		return table;
 	}
 
 	@Override
@@ -36,29 +36,30 @@ public class FindMp3Spider implements Mp3Spider {
 
 	@Override
 	public void run() {
-		
-		System.err.println("html url: "+htmlUrl);
+		System.out.println("----------FindMp3Spider----------");
 		createUrl();
+		System.err.println("html url: "+htmlUrl);
+		
 		String request = htmlUrl;
 		Set<String>	result = LinkUtil.getAllLinks(request);
+		System.out.println("alllinks: "+result);
 		for (String url : result){
-			if(!isUrlAllowed(url))
+			url = makeCrawlable(url);			
+			if(url == null)
 				continue;
 			GenericSpider gs = new GenericSpider(url);
 			gs.run();
 			Set<String> mp3s = gs.getAllMp3Links();
 			for(String mp3 : mp3s){
 				try {
+					System.out.println("found mp3: "+mp3);
 					actOnMp3(mp3);
 					continue;
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
-			
-				
-			
+			}			
 			
 		}
 		
@@ -72,12 +73,22 @@ public class FindMp3Spider implements Mp3Spider {
 	
 	private boolean isUrlAllowed(String url){
 		boolean flag = false;
-		List<String> allowedDomainList = Arrays.asList(props.get("allwedDomains").split(","));
-		String domain = LinkUtil.getDomainName(url);
-		if(allowedDomainList.contains(domain) && (LinkUtil.getExt(url).equalsIgnoreCase(".html")))
+		String startsWith = props.get("startswith");
+		if(url.startsWith(startsWith)){
 			flag = true;
-		//System.out.println("URL: "+url+"\ndomain: "+domain+"\nflag: "+flag);
+			
+		}
+		System.out.println("URL: "+url+" allowed: "+flag+" ");
 		return flag;
+	}
+	
+	private String makeCrawlable(String url){
+		if(!isUrlAllowed(url))
+			return null;
+		String essentialUrl = props.get("essentialUrl");
+		String url2 = essentialUrl+url;
+		System.out.println("making crawlable url to run: "+url2);
+		return url2;
 	}
 	
 	private void actOnMp3(String mp3) throws SQLException{
@@ -86,10 +97,9 @@ public class FindMp3Spider implements Mp3Spider {
 		vo.setSongUri(mp3);
 		vo.setSongUrl(mp3);
 		vo.setStatus(0);
+		vo.setTitle(mp3.substring(mp3.lastIndexOf('/')+1));
 		dao.persist(vo);
-		if (searchResult != null)
-			searchResult.add(vo);
-		
+				
 	}
 	
 	public String createUrl() {

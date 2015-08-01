@@ -52,7 +52,7 @@ public class AsyncSearchDao implements BaseDao<AsyncSearchVO>{
 		Connection con=DBConnection.getSingleConnection();
 		try{
 		 //con = DBConnection.getConnection();
-		String query  = "update "+table+" set uuid = ?,query = ?,result_uri ? ,search_type =? ,tables = ?,timeinMS = ? ,timestamp = ? where id = ?";
+		String query  = "update "+table+" set uuid = ?,query = ?,result_uri = ? ,search_type =? ,tables = ?,timeinMS = ? ,timestamp = ? where id = ?";
 		PreparedStatement preparedStatement = con.prepareStatement(query);
 		
 		preparedStatement.setString(1, obj.getUuid());
@@ -117,14 +117,16 @@ public class AsyncSearchDao implements BaseDao<AsyncSearchVO>{
 		
 	}
 	public AsyncSearchVO selectOneByUuid(String uuid){
-		String sql = "select * from "+table+" where uuid = "+uuid;
+		String sql = "select * from "+table+" where uuid = ?";
+		System.out.println("select for uuid: "+uuid);
 	    Connection con = DBConnection.getSingleConnection();
 		try {
 			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, uuid);
 			ResultSet rs = pstmt.executeQuery();
-			AsyncSearchVO vo = new AsyncSearchVO();
+			AsyncSearchVO vo = null; 
 			if(rs.next()){
-				
+				vo = new AsyncSearchVO();
 				vo.setId(rs.getLong("id"));
 				vo.setQuery(rs.getString("query"));
 				vo.setUuid(rs.getString("uuid"));

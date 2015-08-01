@@ -19,6 +19,9 @@ public class MyMp3SingerSearchSpider implements SearchSpider{
 		setQuery(query);
 	}
 	
+	public String getTable(){
+		return props.get("table");
+	}
 
 	@Override
 	public String getQuery() {

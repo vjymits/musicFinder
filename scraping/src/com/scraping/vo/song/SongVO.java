@@ -8,9 +8,9 @@ public class SongVO {
 	
 	long songId= 0;
 	
-	String songUrl,songUri,artist,album,searchQueries;
+	private String title,songUrl,songUri,artist,album,searchQueries,table=null;
 	
-	int status=-1;
+	int status=0;
 	
 	Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -91,11 +91,27 @@ public class SongVO {
 		return name;
 	}
 	
+	public String getTable(){
+		return this.table;
+	}
+	
+	public void setTable(String tab){
+		this.table = tab;
+	}
+	
 	public String toString(){
 		String json = "[id:"+getId()+"album:"+getAlbum()+"status:"+getStatus()+"songUri:"+getSongUri()+"songUrl:"+getSongUrl()+"name:"+getNameByUrl()+"]";
 		return json;
 		
 		
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 	
 

@@ -1,34 +1,29 @@
 package com.scraping.spider.koolwap;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.sql.SQLException;
+
 import java.util.Map;
 import java.util.Set;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import com.scraping.crawler.Crawler;
 import com.scraping.db.ConfigUtil;
 import com.scraping.link.LinkUtil;
 import com.scraping.spider.Mp3Spider;
+import com.scraping.spider.generic.GenericSpider;
+import com.scraping.vo.song.SongDao;
+import com.scraping.vo.song.SongVO;
 
 public class KoolwapSearchSpider implements Mp3Spider{
 
 	private String htmlUrl="";
 	private String query;
-	private Set<String> allLinks;
 	private Set<String> allMp3Links;
-	private Map<String,String> props = ConfigUtil.getProperties(ConfigUtil.getProperties(ConfigUtil.getConfigFile()).get("KoolwapConfigFile"));
-	
+	private Map<String,String> props = ConfigUtil.getConfigByComponent("KoolwapSearchSpider-config");
+	private Map<String,String> allowedUrls = ConfigUtil.getConfigByComponent("KoolwapSearchSpider-allowedurls");
+	private SongDao dao = new SongDao(props.get("koolwap.config.table"));
 	public KoolwapSearchSpider(String query){
 		
 		this.query=query;
-		this.htmlUrl=this.htmlUrl+props.get("searchurl");
+		this.htmlUrl=this.htmlUrl+props.get("koolwap.config.searchurl");
 		String q=this.query.replace(" ", "-");
 		this.htmlUrl=this.htmlUrl.replace("w1-w2-w3", q);
 				
@@ -38,42 +33,65 @@ public class KoolwapSearchSpider implements Mp3Spider{
 	public void run() {
 		
 		    System.out.println("htmlUrl: "+this.htmlUrl);
-			Crawler crw = new KoolwapCrawler(this.htmlUrl, 0);	
-			crw.start();
+		    //System.out.println("request to koolwap : "+htmlUrl);
+			Set<String>	result = LinkUtil.getAllLinks(htmlUrl);
+			//System.out.println("alllinks: "+result);
+			for (String url : result){
+				if(!isUrlAllowed(url))
+					continue;
+				
+				try{
+					GenericSpider gs = new GenericSpider(url);
+					gs.run();
+					//System.out.println("Url: "+url+" getAll: "+gs.getLinks());
+					for(String mp3 : gs.getAllMp3Links()){
+						actOnMp3(mp3);
+					}
+				}
+				catch(Exception ex){
+				System.out.println("URL: "+url+" Skiping url ...");
+			    }
+			}
 						
 	}
 	
-	private boolean isUrlAllowed(String url){
-		boolean flag = true;
-		List<String> allowedUrlList = Arrays.asList(props.get("allowedurls").split(","));
-		for(String allowedUrl : allowedUrlList){
-			if(url.indexOf(allowedUrl)!=-1 && LinkUtil.getExt(url).equalsIgnoreCase(".html"))
-				flag = true;
-			else{
-				flag = false;
-				break;
-			}				
-		}		
-		System.out.println("URL: "+url+"\nflag: "+flag);
-		return flag;
-		
+	private void actOnMp3(String mp3) {
+		System.out.println("Mp3: "+mp3);
+		SongVO vo = new SongVO();
+		vo.setSongUrl(mp3);
+		vo.setSongUri(mp3);
+		vo.setStatus(0);
+		vo.setSearchQueries(this.query);
+		vo.setTitle(mp3.substring(mp3.lastIndexOf('/')+1));
+			
+		try {
+			dao.persist(vo);
+		} catch (SQLException e) {
+			System.out.println("Skiping to add in DB, mp3: "+mp3);
+			e.printStackTrace();
+		}
 		
 	}
 	
-	private Set<String> getAllLinks(){
+	private boolean isUrlAllowed(String url){
+		boolean f = false;
+		for(String one : allowedUrls.values())
+		{
+			if(url.contains(one)){
+				f= true;
+				break;
+			}
+		}
 		
-		Set<String> result ;	
-		allMp3Links = new HashSet<String>();	
-		String request = this.htmlUrl;
-		System.out.println("Request To mp3Mad.com: "+request);
-		result = LinkUtil.getAllLinks(request);
-		return result;
-			
+		System.out.println("url: "+url+" flag: "+f);
+		return f;
+		
 	}
+	
 
 	@Override
 	public Set<String> getLinks() {
-		return allLinks;
+		return null;
 	}
 	
 		
@@ -81,6 +99,9 @@ public class KoolwapSearchSpider implements Mp3Spider{
 	public Set<String> getAllMp3Links(){
 		return this.allMp3Links;
 		
+	}
+	public String getTable(){
+		return props.get("koolwap.config.table");
 	}
 
 }

@@ -33,13 +33,13 @@ public class SongDao implements BaseDao<SongVO>{
 	"`title` varchar(256),"+
     "`song_id` bigint,"+
     "`song_uri` varchar(256),"+
-    "`song_url` varchar(256) UNIQUE,"+
+    "`song_url` varchar(256),"+
     "`status` smallint,"+
     "`artists` varchar(500),"+
     "`album` varchar(256),"+
     "`Searchq` varchar(1000),"+
     "`timestamp` datetime,"+
-    "FULLTEXT search_idx (`song_url`,`artists`,`album`,`searchq`)"+
+    "FULLTEXT search_idx (`song_url`,`artists`,`album`,`Searchq`,`title`)"+
     ")engine=myisam";
 	Connection con=DBConnection.getSingleConnection();
 	try{
@@ -63,7 +63,7 @@ public class SongDao implements BaseDao<SongVO>{
 		Connection con=DBConnection.getSingleConnection();
 		try{
 		 //con = DBConnection.getConnection();
-		String query  = "insert into "+tableName+" (song_id,song_uri,song_url,status,timestamp,artists,album,searchq)values(?,?,?,?,?,?,?,?)";
+		String query  = "insert into "+tableName+" (song_id,song_uri,song_url,status,timestamp,artists,album,searchq,title)values(?,?,?,?,?,?,?,?,?)";
 		PreparedStatement preparedStatement = con.prepareStatement(query);
 		preparedStatement.setLong(1, obj.getSongId());
 		preparedStatement.setString(2, obj.getSongUri());
@@ -73,6 +73,7 @@ public class SongDao implements BaseDao<SongVO>{
 		preparedStatement.setString(6, obj.getArtist());
 		preparedStatement.setString(7, obj.getAlbum());
 		preparedStatement.setString(8, obj.getSearchQueries());
+		preparedStatement.setString(9, obj.getTitle());
 		r=preparedStatement.executeUpdate(); 
 		
 		}
@@ -80,7 +81,8 @@ public class SongDao implements BaseDao<SongVO>{
 			System.out.println( "DUPLICATE URL: "+obj.getSongUrl() +" And uri: "+obj.getSongUri());
 		}
 		catch(SQLException ex){
-			createTableIfNotExist();
+			ex.printStackTrace();
+			//createTableIfNotExist();
 		}
 		finally{
 			con.close();
@@ -124,6 +126,7 @@ public class SongDao implements BaseDao<SongVO>{
 				//System.out.println(vo.getSongUrl());
 				vo.setTimestamp(rs.getTimestamp("timestamp"));
 				vo.setStatus(rs.getInt("status"));
+				vo.setTable(tableName);
 				listOfSongs.add(vo);
 			}
 			return listOfSongs;
@@ -156,6 +159,8 @@ public class SongDao implements BaseDao<SongVO>{
 				//System.out.println(vo.getSongUrl());
 				vo.setTimestamp(rs.getTimestamp("timestamp"));
 				vo.setStatus(rs.getInt("status"));
+				vo.setTable(tableName);
+				vo.setTitle(rs.getString("title"));
 				listOfSongs.add(vo);
 			}
 			return listOfSongs;
@@ -189,6 +194,7 @@ public class SongDao implements BaseDao<SongVO>{
 				//System.out.println(vo.getSongUrl());
 				vo.setTimestamp(rs.getTimestamp("timestamp"));
 				vo.setStatus(rs.getInt("status"));
+				vo.setTable(tableName);
 				
 			}
 			return vo;

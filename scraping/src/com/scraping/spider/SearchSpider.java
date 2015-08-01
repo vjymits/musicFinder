@@ -10,5 +10,7 @@ public interface SearchSpider extends Runnable{
 	
 	String createUrl();
 	
+	public String getTable();
+	
 
 }

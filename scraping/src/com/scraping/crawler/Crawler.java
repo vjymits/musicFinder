@@ -1,11 +1,8 @@
 package com.scraping.crawler;
 
 import java.sql.SQLException;
-import java.util.Set;
 
-import com.scraping.db.BaseDao;
 import com.scraping.link.LinkUtil;
-import com.scraping.search.SearchUtil;
 import com.scraping.vo.song.SongDao;
 import com.scraping.vo.song.SongVO;
 
@@ -13,7 +10,7 @@ import com.scraping.vo.song.SongVO;
 public abstract class Crawler extends Thread{
 	
 	private String url;
-	private String searchResultSetName;
+	protected String query;
 	
 	protected SongDao dao;
 	
@@ -51,10 +48,7 @@ public abstract class Crawler extends Thread{
 			SongVO song = new SongVO();
 			song.setSongUri(url);
 			song.setSongUrl(url);
-			Set<SongVO> set = SearchUtil.getSearchResultSet(searchResultSetName);
-			if(set!=null)
-				set.add(song);
-			
+						
 		    actOnMp3();
 		}
 		else if(level == 0){
@@ -74,6 +68,7 @@ public abstract class Crawler extends Thread{
 		SongVO vo = new SongVO();
 		vo.setSongUrl(getUrl());
 		vo.setStatus(0);
+		vo.setSearchQueries(query);
 		try {
 			dao.persist(vo);
 		} catch (SQLException e) {
@@ -100,12 +95,13 @@ public abstract class Crawler extends Thread{
 	public void setLevel(int level) {
 		this.level = level;
 	}
+	public String getQuery(){
+		return query;
+	}
+	public void setQuery(String q){
+		this.query = q;
+	}
 
-	public String getSearchResultSetName() {
-		return searchResultSetName;
-	}
-	public void setSearchResultSetName(String searchResultSetName) {
-		this.searchResultSetName = searchResultSetName;
-	}
+	
 
 }

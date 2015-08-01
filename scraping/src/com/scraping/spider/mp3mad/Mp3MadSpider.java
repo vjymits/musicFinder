@@ -9,7 +9,6 @@ import java.util.Set;
 
 import com.scraping.db.ConfigUtil;
 import com.scraping.link.LinkUtil;
-import com.scraping.search.SearchUtil;
 import com.scraping.spider.Mp3Spider;
 import com.scraping.vo.song.SongDao;
 import com.scraping.vo.song.SongVO;
@@ -20,62 +19,69 @@ public class Mp3MadSpider implements Mp3Spider{
 	private String query;
 	private Set<String> allLinks;
 	private Set<String> allMp3Links;
-	private SongDao dao;
-	private Map<String,String> props = ConfigUtil.getProperties(ConfigUtil.getProperties(ConfigUtil.getConfigFile()).get("MP3MadConfigFile"));
 	
+	private Map<String,String> props = ConfigUtil.getProperties(ConfigUtil.getProperties(ConfigUtil.getConfigFile()).get("MP3MadConfigFile"));
+	String tableName = props.get("tablename");
+	SongDao songDao = new SongDao(tableName);
 	public Mp3MadSpider(String query){
-		
-		
+		this.query = query;
 		this.htmlUrl=this.htmlUrl+props.get("searchurl");
-		String q =this.query.replaceAll(" ", "+");
+		String q = this.query;
+		if(this.query.contains(" "))
+		   q =this.query.replaceAll(" ", "+");
 		this.htmlUrl=this.htmlUrl.replaceAll("qqqq", q);
 								
 	}
 	
+	public String getTable(){
+		return tableName;
+	}
+	
 	@Override
 	public void run() {
+		System.out.println("----------Mp3MadSpider-----------");
 		allLinks = getAllLinks();
-		//System.out.println(allLinks);
+		System.out.println(allLinks);
 		allMp3Links = new HashSet<String>();
 		for(String link: allLinks){
 			if(!isUrlAllowed(link))
 				continue;
-			allMp3Links.addAll(LinkUtil.getLinksOfExt(link, ".mp3"));
+			Set<String> setOfMp3 = LinkUtil.getLinksOfExt(link, ".mp3");
+			if(setOfMp3 == null)
+				continue;
+			allMp3Links.addAll(setOfMp3);
+			for(String mp3 : setOfMp3){
+				actOnMp3(mp3);
+			}
 						
 		}
-		addAllMp3InDB();
+		
 		
 	}
+	
+	public void actOnMp3(String mp3){
+		System.out.println("Mp3: "+mp3);
+		SongVO vo = new SongVO();
+		vo.setSongUrl(mp3);
+		vo.setSongUri(mp3);
+		vo.setStatus(0);
+		vo.setSearchQueries(this.query);
+		vo.setTitle(mp3.substring(mp3.lastIndexOf('/')+1));
+			
+		try {
+			songDao.persist(vo);
+		} catch (SQLException e) {
+			System.out.println("Skiping to add in DB, mp3: "+mp3);
+			e.printStackTrace();
+		}
+	}
+
 
 	@Override
 	public Set<String> getLinks() {
 		return allLinks;
 	}
-	
-	public int addAllMp3InDB() {
-		String tableName = props.get("tablename");
-		SongDao dao = new SongDao(tableName);
-		int c = 0;
-		Set<SongVO> set = SearchUtil.getSearchResultSet(query);
-		for (String mp3 : allMp3Links){
-			SongVO vo = new SongVO();
-			vo.setSongUrl(mp3);
-			vo.setSongUri(mp3);
-			System.out.println("mp3: "+mp3);
-			vo.setSearchQueries(query);
-			vo.setStatus(0);
-			set.add(vo);
-			try {
-				dao.persist(vo);
-				c++;
-			} catch (SQLException e) {
-				
-				e.printStackTrace();
-			}
-		}
-		return c;
-	}
-	
+			
 	private Set<String> getAllLinks(){
 			
 		Set<String> result ;	

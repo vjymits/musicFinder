@@ -5,11 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,13 +19,14 @@ import com.scraping.search.searchquery.AsyncSearchDao;
 import com.scraping.search.searchquery.AsyncSearchVO;
 import com.scraping.spider.findmp3.FindMp3Spider;
 import com.scraping.spider.generic.GenericGoogleSearcher;
+import com.scraping.spider.koolwap.KoolwapSearchSpider;
 import com.scraping.spider.mp3mad.Mp3MadSpider;
-import com.scraping.spider.mp3skull.Mp3SkullSpider;
+import com.scraping.spider.search.mp3pm.Mp3pmSearchSpider;
 import com.scraping.spider.xsongspk.XsongsPKSearchSpider;
 import com.scraping.vo.song.SongVO;
 
 public class SearchUtil {
-	static private Map<String, Set<SongVO>> searchResultSet = new HashMap<String, Set<SongVO>>();
+	
 	static private AsyncSearchDao searchResultDao = new AsyncSearchDao();
 	public static Set<SongVO> SearchInTable(String sql) throws SQLException{
 		Connection con = DBConnection.getSingleConnection();
@@ -55,40 +52,84 @@ public class SearchUtil {
 		return set;
 	}
 	
-	public static Set<SongVO> searchInSites(String q){
+	public static String searchInSites(String q){
+		byte [] charBytes = (q+"-"+"sites").getBytes();
+		String uuid = UUID.nameUUIDFromBytes(charBytes).toString();
+		ThreadGroup tg = new ThreadGroup(uuid);
+		
 		XsongsPKSearchSpider xspd = new XsongsPKSearchSpider(q);
 		Mp3MadSpider mspd = new Mp3MadSpider(q);
 		FindMp3Spider fspd = new FindMp3Spider(q);
-		//Mp3SkullSpider skullspd = new Mp3SkullSpider(q);
-		openNewSearchResultSet(q);
-		Thread txspd = new Thread(xspd);
-		Thread tmspd = new Thread(mspd);
-		Thread tfspd = new Thread(fspd);
+		Mp3pmSearchSpider mp3pm = new Mp3pmSearchSpider(q);
+		KoolwapSearchSpider koolwap = new KoolwapSearchSpider(q);
 		
-		String r = "{task/search-result/"+q+"}";
-		return null;
-			
-	}
-	
-	public static String gglSearch(String q){
-		String uuid = UUID.fromString(q+"-"+"ggl").toString();
-		GenericGoogleSearcher ggs = new GenericGoogleSearcher(q);
-		AsyncSearchVO as=  new AsyncSearchVO();
+		AsyncSearchVO as = new AsyncSearchVO();
 		as.setQuery(q);
 		as.setUuid(uuid);
-		as.setSearchType("ggl");
-		as.setTables(as.getTables());
-		as.setTimeinMS(System.currentTimeMillis());		
-		new Thread(ggs).start();
-		String resultUri = "resultUri : "+"/scraping/mp3/search/search-result/"+uuid;	
+		as.setSearchType("sites");
+		as.setTables(fspd.getTable()+","+xspd.getTable()+","+mspd.getTable()+","+mp3pm.getTable()+","+koolwap.getTable());
+		//as.setTables(mspd.getTable());
+		as.setTimeinMS(System.currentTimeMillis());
+		//Mp3SkullSpider skullspd = new Mp3SkullSpider(q);
+		//openNewSearchResultSet(q);
+		
+		Thread tfspd = new Thread(tg,fspd);
+		Thread txspd = new Thread(tg,xspd);
+		Thread ThrKool =  new Thread(tg,koolwap);
+		Thread tmspd = new Thread(tg,mspd);
+		Thread ThrMp3Pm = new Thread(tg, mp3pm);
+		
+		ThrKool.start();
+		tfspd.start();
+		txspd.start();
+		tmspd.start();
+		ThrMp3Pm.start();
+		
+		
+		String res = "/scraping/mp3/search/search-result/"+uuid;
+		String resultUri = "{"+"\""+"resultUri"+"\":"+"\""+res+"\""+"}";
 		as.setResultUri(resultUri);
 		try {
 			AsyncSearchVO vo = searchResultDao.selectOneByUuid(uuid);
 			if(vo == null)
 			   searchResultDao.persist(as);
-			else
+			else{
+				System.out.println("ID: "+vo.getId());
 				as.setId(vo.getId());
 				searchResultDao.update(vo.getId(), as);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return resultUri;
+			
+	}
+	
+	public static String gglSearch(String q){
+		byte [] charBytes = (q+"-"+"ggl").getBytes();
+		String uuid = UUID.nameUUIDFromBytes(charBytes).toString();
+		GenericGoogleSearcher ggs = new GenericGoogleSearcher(q);
+		AsyncSearchVO as=  new AsyncSearchVO();
+		as.setQuery(q);
+		as.setUuid(uuid);
+		as.setSearchType("ggl");
+		as.setTables(GenericGoogleSearcher.getTable());
+		as.setTimeinMS(System.currentTimeMillis());		
+		new Thread(ggs).start();
+		String res = "/scraping/mp3/search/search-result/"+uuid;
+		String resultUri = "{"+"\""+"resultUri"+"\":"+"\""+res+"\""+"}";
+		as.setResultUri(resultUri);
+		try {
+			AsyncSearchVO vo = searchResultDao.selectOneByUuid(uuid);
+			if(vo == null)
+			   searchResultDao.persist(as);
+			else{
+				System.out.println("ID: "+vo.getId());
+				as.setId(vo.getId());
+				searchResultDao.update(vo.getId(), as);
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -104,18 +145,5 @@ public class SearchUtil {
 	
 	}
 	
-	public static Set<SongVO> getSearchResultSet(String str){
-		return searchResultSet.get(str);
-	}
-	public static void openNewSearchResultSet(String str){
-		Set<SongVO> set = new HashSet<SongVO>();
-		searchResultSet.put(str, set);
-		
-	}
-	public static void closeSearchResultSet(String str){
-		searchResultSet.remove(str);
-	}
 	
-	
-
 }
